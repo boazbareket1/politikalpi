@@ -13,6 +13,7 @@
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 
 
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Secular+One&family=Assistant:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
@@ -465,7 +466,7 @@ function score(party,ans,prio){
 /* ---------- navigation ---------- */
 const STEP_NAMES=["המפלגות","השאלון","סדרי עדיפויות","תוצאות","שאלות"];
 function renderSteps(){
-  $("#steps").innerHTML=STEP_NAMES.map((n,i)=>`<button type="button" data-go="${i}" class="${i<state.step?"done":""}" ${i===state.step?'aria-current="step"':""} ${i>state.maxStep?"disabled":""}><span class="bar"></span><span class="lbl">${n}</span></button>`).join("");
+  $("#steps").innerHTML=STEP_NAMES.map((n,i)=>`<button type="button" data-go="${i}" class="${i<state.step?"done":""}" ${i===state.step?'aria-current="step"':""} ${i>=3&&answeredCount()<5?"disabled title=\"זמין אחרי 5 תשובות לפחות\"":""}><span class="bar"></span><span class="lbl">${n}</span></button>`).join("");
 }
 function go(i){
   i=+i;if(i===3&&answeredCount()<5){i=1;state.q=STATEMENTS.findIndex(s=>!(s.id in state.ans));if(state.q<0)state.q=0;}
@@ -496,7 +497,7 @@ function renderReader(scroll){
     <details class="stmts"><summary>איך סימנו את העמדה שלה בכל אחת מ־14 השאלות</summary><ul>${STATEMENTS.map(s=>{const pp=p.p[s.id];return `<li>${esc(s.t)} <b>${posLabel(pp?.v)}</b>${pp&&!pp.d?' <span class="est">(הערכה)</span>':""}</li>`}).join("")}</ul></details>`;
   const prev=cur>0?ORDER[cur-1]:null,next=cur<ORDER.length-1?ORDER[cur+1]:null;
   $("#readerNav").innerHTML=`<button class="btn ghost" type="button" data-rd="-1" ${prev?"":"disabled"}>${prev?"חזרה ל"+esc(prev.name):"חזרה"}</button>`+
-    (next?`<button class="btn" type="button" data-rd="1">למפלגה הבאה: ${esc(next.name)}</button>`:`<button class="btn" type="button" data-go="1">סיימתי לקרוא, לשאלון</button>`);
+    (next?`<button class="btn ghost" type="button" data-go="1">לשאלון</button><button class="btn" type="button" data-rd="1">למפלגה הבאה: ${esc(next.name)}</button>`:`<button class="btn" type="button" data-go="1">סיימתי לקרוא, לשאלון</button>`);
   if(scroll)$("#reader").scrollIntoView({block:"start",behavior:"smooth"});
 }
 $("#partyIndex").addEventListener("click",e=>{const b=e.target.closest("[data-pi]");if(b){cur=+b.dataset.pi;renderReader(true);}});
@@ -511,6 +512,7 @@ function renderQ(){
   $("#skip").setAttribute("aria-pressed",a===null);
   $("#qprev").disabled=state.q===0;
   $("#qnext").textContent=state.q===STATEMENTS.length-1?"לסדרי העדיפויות":"הבא";
+  renderSteps();
   $("#dots").innerHTML=STATEMENTS.map((x,i)=>`<span class="${state.ans[x.id]!=null?"a":""} ${i===state.q?"cur":""}"></span>`).join("");
 }
 function answer(v){
