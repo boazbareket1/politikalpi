@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>פוליטיקלפי</title>
+<meta name="description" content="כלי השוואה ניטרלי לבחירות לכנסת ה־26: 13 רשימות, סקירה לפי תחומים, 14 היגדים וחישוב התאמה שקוף.">
+<meta property="og:title" content="פוליטיקלפי">
+<meta property="og:description" content="איזו מפלגה הכי קרובה לעמדות שלך? 14 היגדים, 13 רשימות, חישוב שקוף.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3' y='8' width='26' height='18' rx='2' fill='%232c5a8c'/%3E%3Crect x='9' y='3' width='14' height='10' fill='%23fff' stroke='%232c5a8c' stroke-width='2'/%3E%3C/svg%3E">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Secular+One&family=Assistant:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: one narrow column, a voting-booth flow. Party cards are ballot slips (white paper, heavy letters); the frame is the blue of the ballot envelope. */
+:root{
+  --bg:#eef1f5; --paper:#ffffff; --ink:#18222f; --muted:#5b6778; --line:#d5dbe4;
+  --envelope:#2c5a8c; --envelope-soft:#dfe8f3; --mark:#c2410c;
+  --agree:#2f7d5b; --disagree:#b4423a; --neutral:#8a94a3;
+  --display:"Secular One","Assistant",system-ui,sans-serif;
+  --body:"Assistant",system-ui,"Segoe UI",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#10161f; --paper:#1a2330; --ink:#e7ecf2; --muted:#9aa6b6; --line:#2c394b;
+  --envelope:#7fa8d8; --envelope-soft:#1f2f45; --mark:#f08a4b;
+  --agree:#5cbf92; --disagree:#e2766d; --neutral:#7c8797; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10161f; --paper:#1a2330; --ink:#e7ecf2; --muted:#9aa6b6; --line:#2c394b;
+  --envelope:#7fa8d8; --envelope-soft:#1f2f45; --mark:#f08a4b;
+  --agree:#5cbf92; --disagree:#e2766d; --neutral:#7c8797; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55;padding-inline:16px;padding-block:0 48px}
+.wrap{max-width:760px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.2;text-wrap:balance;margin:0}
+h1{font-size:clamp(28px,6vw,40px)}
+h2{font-size:clamp(22px,4.5vw,28px)}
+h3{font-size:19px}
+p{margin:0}
+a{color:var(--envelope)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--mark);outline-offset:2px}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+
+/* header + progress */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:14px 10px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand .date{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px}
+.steps button{border:0;background:none;padding:0;text-align:start;font-size:13px;color:var(--muted)}
+.steps button:disabled{cursor:default}
+.steps .bar{display:block;height:5px;border-radius:3px;background:var(--line);margin-bottom:5px}
+.steps button[aria-current="step"]{color:var(--ink);font-weight:700}
+.steps button.done .bar,.steps button[aria-current="step"] .bar{background:var(--envelope)}
+@media (max-width:480px){.steps .lbl{display:none}}
+
+main{display:grid;gap:28px;padding-top:24px}
+section[data-step]{display:grid;gap:20px}
+.lede{font-size:18px;max-width:62ch}
+.note{background:var(--envelope-soft);border-radius:10px;padding:14px 16px;font-size:15px;display:grid;gap:6px}
+
+.btn{border:2px solid var(--envelope);background:var(--envelope);color:var(--paper);border-radius:999px;padding:10px 22px;font-weight:700}
+.btn.ghost{background:transparent;color:var(--envelope)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* ballot slips */
+.slips{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.slip{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:14px 16px 16px;display:grid;gap:8px;align-content:start;box-shadow:0 1px 0 var(--line);text-align:start}
+.slip .letters{font-family:var(--display);font-size:40px;line-height:1;letter-spacing:.02em}
+.slip .name{font-weight:700;font-size:17px}
+.slip .lead{font-size:14px;color:var(--muted)}
+.slip .one{font-size:15px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:12.5px;border:1px solid var(--line);border-radius:999px;padding:2px 9px;color:var(--muted)}
+.chip.bloc-c{border-color:var(--envelope);color:var(--envelope)}
+.index{display:grid;gap:8px}
+.index-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.index-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.index-list button{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;text-align:start;border:1px solid var(--line);background:var(--paper);border-radius:8px;padding:10px 12px}
+.index-list .nm{font-weight:700;font-size:16.5px}
+.index-list .ld{font-size:14px;color:var(--muted);grid-column:1}
+.index-list .st{grid-row:1/3;grid-column:2;font-size:12.5px;color:var(--agree);font-weight:700}
+.index-list button[aria-current="true"]{border-color:var(--envelope);background:var(--envelope-soft);box-shadow:inset 0 0 0 1px var(--envelope)}
+.linkbtn{border:0;background:none;padding:0;color:var(--envelope);font-weight:700;text-decoration:underline}
+.reader{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:24px 22px;display:grid;gap:18px}
+.reader-head{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
+.reader-head .letters{font-family:var(--display);font-size:48px;line-height:1;border:2px solid var(--ink);border-radius:4px;padding:8px 12px;min-width:2.2em;text-align:center}
+.reader-head .count{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.reader .one{font-size:18px;font-weight:600}
+.reader .topicblock{display:grid;gap:4px;max-width:65ch}
+.reader .topicblock h3{font-size:18px;color:var(--envelope)}
+.reader .stmts{font-size:15px}
+.reader .stmts ul{margin:8px 0 0;padding-inline-start:18px;display:grid;gap:6px}
+.reader .stmts summary{color:var(--envelope);font-weight:600;cursor:pointer}
+.topics{display:flex;gap:6px;flex-wrap:wrap}
+.topics button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:6px 14px;font-size:15px;font-weight:600}
+.topics button[aria-selected="true"]{background:var(--envelope);border-color:var(--envelope);color:var(--paper)}
+.slip .topic{font-size:15.5px;border-inline-start:3px solid var(--envelope);padding-inline-start:10px}
+.slip dl{margin:6px 0 0;display:grid;gap:8px}
+.slip dt{font-weight:700;color:var(--envelope)}
+.slip dd{margin:0}
+.slip details{font-size:14px}
+.slip summary{color:var(--envelope);font-weight:600;cursor:pointer}
+.slip details ul{margin:6px 0 0;padding-inline-start:18px;display:grid;gap:4px}
+
+/* quiz */
+.qcard{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:22px 20px;display:grid;gap:18px}
+.qmeta{display:flex;justify-content:space-between;gap:10px;font-size:14px;color:var(--muted)}
+.qmeta .cat{color:var(--envelope);font-weight:700}
+.qtext{font-size:clamp(19px,4vw,23px);font-weight:600;line-height:1.4}
+.qhelp{font-size:15px;color:var(--muted)}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.scale button,.skip{border:2px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 4px;font-size:14px;font-weight:600;line-height:1.25;min-height:58px}
+.scale button[aria-pressed="true"],.skip[aria-pressed="true"]{border-color:var(--envelope);background:var(--envelope);color:var(--paper)}
+.scale button .n{display:block;font-family:var(--mono);font-size:13px;opacity:.75}
+.skip{min-height:0;padding:8px 14px;justify-self:start}
+.qnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.dots{display:flex;gap:4px;flex-wrap:wrap}
+.dots span{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.dots span.a{background:var(--envelope)}
+.dots span.cur{outline:2px solid var(--mark);outline-offset:1px}
+@media (max-width:480px){.scale{grid-template-columns:1fr}.scale button{min-height:0;padding:10px 12px;text-align:start}.scale button .n{display:inline;margin-inline-end:8px}}
+
+/* priorities */
+.opts{display:grid;gap:10px}
+.opt{display:flex;gap:12px;align-items:flex-start;background:var(--paper);border:2px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer}
+.opt:has(input:checked){border-color:var(--envelope)}
+.opt input{margin-top:5px;accent-color:var(--envelope);width:18px;height:18px;flex:none}
+.opt b{display:block}
+.opt span{font-size:14px;color:var(--muted)}
+
+/* results */
+.results{display:grid;gap:10px}
+.res{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:8px}
+.res-head{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center}
+.res .letters{font-family:var(--display);font-size:26px;min-width:2.6em;text-align:center;border:1px solid var(--line);border-radius:4px;padding:2px 4px;background:var(--bg)}
+.res .pct{font-family:var(--mono);font-size:20px;font-variant-numeric:tabular-nums}
+.meter{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.meter i{display:block;height:100%;background:var(--envelope);border-radius:4px}
+.res.top .meter i{background:var(--mark)}
+.res details summary{font-size:14px;color:var(--envelope);font-weight:600;cursor:pointer}
+.cmp{overflow-x:auto}
+.cmp table{border-collapse:collapse;width:100%;font-size:14px;min-width:420px}
+.cmp th,.cmp td{border-bottom:1px solid var(--line);padding:6px 4px;text-align:start;vertical-align:top}
+.cmp td.v{white-space:nowrap;font-weight:600}
+.pill{display:inline-block;border-radius:999px;padding:1px 8px;font-size:12.5px;font-weight:700}
+.pill.ok{background:color-mix(in srgb,var(--agree) 18%,transparent);color:var(--agree)}
+.pill.no{background:color-mix(in srgb,var(--disagree) 18%,transparent);color:var(--disagree)}
+.pill.mid{background:color-mix(in srgb,var(--neutral) 20%,transparent);color:var(--muted)}
+.est{color:var(--muted);font-weight:400}
+
+/* AI */
+.ai{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:18px;display:grid;gap:12px}
+.md{display:grid;gap:10px;min-width:0}
+.md h3{font-size:19px;margin-top:6px}
+.md ul{margin:0;padding-inline-start:20px;display:grid;gap:4px}
+.thinking{color:var(--muted);font-style:italic}
+.chatlog{display:grid;gap:10px;max-height:60vh;overflow-y:auto;padding:2px}
+.msg{border-radius:12px;padding:10px 14px;max-width:92%;min-width:0}
+.msg.u{background:var(--envelope);color:var(--paper);justify-self:start}
+.msg.a{background:var(--bg);border:1px solid var(--line);justify-self:end}
+.chatform{display:flex;gap:8px}
+.chatform textarea{flex:1;min-width:0;font:inherit;font-size:16px;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--bg);color:var(--ink);resize:vertical;min-height:48px}
+.suggest{display:flex;gap:6px;flex-wrap:wrap}
+.suggest button{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:4px 12px;font-size:14px}
+footer{border-top:1px solid var(--line);padding-top:16px;font-size:14px;color:var(--muted);display:grid;gap:8px}
+footer ul{margin:0;padding-inline-start:18px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+</head>
+<body>
+<div class="wrap" dir="rtl" lang="he">
+<header class="top">
+  <div class="brand">
+    <h1>פוליטיקלפי</h1>
+    <span class="date">מיפוי עצמי במרחב הפוליטי · בחירות לכנסת ה־26 · 27.10.2026</span>
+  </div>
+  <nav class="steps" id="steps" aria-label="שלבים"></nav>
+</header>
+
+<main>
+<!-- STEP 1 -->
+<section data-step="0">
+  <p class="lede">לא בטוחים במי לבחור? כאן אפשר להכיר כל מפלגה, לענות על 14 שאלות קצרות ולראות עם מי יש לכם הכי הרבה הסכמה, ובמה בדיוק.</p>
+  <div class="note">
+    <b>לפני שמתחילים</b>
+    <span>מה שכתוב על כל מפלגה מבוסס על מה שהיא ומנהיגיה אמרו ופרסמו עד תחילת אוקטובר 2026. כשלא היה מידע ברור, כתוב שלא פורסם או שזו הערכה.</span>
+    <span>החישוב פשוט וגלוי, ולא נעשה על ידי בינה מלאכותית. התוצאה עוזרת לחשוב, היא לא אומרת לכם למי להצביע. התשובות לא נשמרות ולא נשלחות לשום מקום.</span>
+  </div>
+  <div class="index">
+    <div class="index-head"><h2>13 הרשימות</h2><span class="muted small" id="readCount"></span></div>
+    <p class="muted small">לחצו על רשימה כדי לקרוא מה היא חושבת. הסדר אקראי ומשתנה בכל כניסה, כדי לא להעדיף אף אחת.</p>
+    <div class="index-list" id="partyIndex" aria-label="בחירת רשימה"></div>
+    <p class="small">כבר מכירים את המפלגות? <button class="linkbtn" type="button" data-go="1">אפשר לעבור ישר לשאלון</button></p>
+  </div>
+  <article class="reader" id="reader" aria-live="polite"></article>
+  <div class="qnav" id="readerNav"></div>
+</section>
+
+<!-- STEP 2 -->
+<section data-step="1" hidden>
+  <div class="qcard">
+    <div class="qmeta"><span class="cat" id="qcat"></span><span id="qcount"></span></div>
+    <p class="qtext" id="qtext"></p>
+    <p class="qhelp" id="qhelp"></p>
+    <div class="scale" id="scale" role="group" aria-label="מידת הסכמה"></div>
+    <button class="skip" id="skip" type="button">אין לי עמדה / לא בטוח</button>
+  </div>
+  <div class="qnav">
+    <button class="btn ghost" id="qprev" type="button">הקודם</button>
+    <div class="dots" id="dots" aria-hidden="true"></div>
+    <button class="btn" id="qnext" type="button">הבא</button>
+  </div>
+</section>
+
+<!-- STEP 3 -->
+<section data-step="2" hidden>
+  <h2>מה הכי חשוב לך?</h2>
+  <p class="muted">בחרו עד שני תחומים. השאלות בתחומים האלה ייחשבו כפול.</p>
+  <div class="opts" id="prio"></div>
+  <h3>ומה חשוב לך במנהיגות?</h3>
+  <p class="muted small">השאלה הזו לא משנה את האחוזים. היא רק עוזרת להסבר המורחב.</p>
+  <div class="opts" id="lead"></div>
+  <div class="actions"><button class="btn ghost" data-go="1">חזרה לשאלון</button><button class="btn" data-go="3">לתוצאות</button></div>
+</section>
+
+<!-- STEP 4 -->
+<section data-step="3" hidden>
+  <h2>ההתאמה שלך</h2>
+  <p class="muted" id="resnote"></p>
+  <div class="results" id="results"></div>
+  <div class="ai" id="explain">
+    <h3>הסבר מורחב</h3>
+    <p class="muted small">Claude יכתוב פרופיל קצר של העמדות שלך ויסביר את ההתאמות והפערים. התשובות שלך יישלחו ל־Claude בחשבון שלך.</p>
+    <div class="actions"><button class="btn" id="explainBtn" type="button">לקבל הסבר</button><button class="btn ghost" id="explainStop" type="button" hidden>עצירה</button></div>
+    <div class="md" id="explainOut"></div>
+  </div>
+  <div class="actions"><button class="btn ghost" data-go="1">לשנות תשובות</button><button class="btn" data-go="4" id="toChat">שאלות פתוחות</button></div>
+</section>
+
+<!-- STEP 5 -->
+<section data-step="4" hidden>
+  <h2>שאלות פתוחות</h2>
+  <p class="muted">אפשר לשאול על מפלגה, על מושג או על ההבדלים בין עמדות. Claude עונה על בסיס הנתונים בכלי ומשתדל להציג כל צד בהגינות.</p>
+  <div class="ai">
+    <div class="suggest" id="suggest"></div>
+    <div class="chatlog" id="chatlog" aria-live="polite"></div>
+    <form class="chatform" id="chatform">
+      <textarea id="chatin" rows="2" placeholder="למשל: מה ההבדל בין ישר! לביחד בנושא הגיוס?"></textarea>
+      <button class="btn" id="chatsend" type="submit">שליחה</button>
+    </form>
+    <p class="muted small" id="chatnote"></p>
+  </div>
+  <div class="actions"><button class="btn ghost" data-go="3">חזרה לתוצאות</button></div>
+</section>
+<p class="note" id="noai" hidden>ההסבר המורחב והשאלות הפתוחות זמינים כשפותחים את הכלי מתוך Claude. ההשוואה עצמה עובדת בכל מקרה.</p>
+
+<footer>
+  <p>הנתונים: רשימות, אותיות ומוצא הרשימות לפי ועדת הבחירות כפי שדווחו בתקשורת; ממוצע סקרים של 30 יום עד 1.10.2026. עמדות המפלגות קודדו לפי הצהרות פומביות ומצעים, ועשויות להכיל טעויות. לפני ההצבעה כדאי לבדוק באתרי המפלגות עצמן.</p>
+  <ul>
+    <li><a href="https://www.ynet.co.il/news/elections2026/article/sjmed8uqgx" target="_blank" rel="noopener">אותיות הפתקים (ynet)</a></li>
+    <li><a href="https://elections.gtmascode.dev/" target="_blank" rel="noopener">רשימות וממוצע סקרים (בחירות2026)</a></li>
+    <li><a href="https://www.idi.org.il/policy/parties-and-elections/" target="_blank" rel="noopener">עמודי המפלגות במכון הישראלי לדמוקרטיה</a></li>
+    <li><a href="https://www.ynet.co.il/news/elections2026/article/yokra14910407" target="_blank" rel="noopener">עמדות המפלגות על יהודה ושומרון (ynet)</a></li>
+  </ul>
+  <p>כלי עצמאי ולא מפלגתי. אחוז החסימה הוא 3.25% מהקולות הכשרים, כ־4 מנדטים.</p>
+</footer>
+</main>
+</div>
+
+<script>
+"use strict";
+const CATS={sec:"ביטחון ומדיניות",law:"משפט וממשל",rel:"דת, מדינה וגיוס",eco:"כלכלה ויוקר המחיה",soc:"חברה ושוויון"};
+const CAT_HELP={sec:"הסכסוך עם הפלסטינים ועתיד יהודה ושומרון",law:"מערכת המשפט, ועדת חקירה ומגבלות על השלטון",rel:"נישואים, שבת וגיוס תלמידי ישיבות",eco:"מסים, רווחה ומחירים",soc:"שוויון אזרחי, שותפויות וזכויות"};
+
+const STATEMENTS=[
+ {id:"s1",cat:"sec",t:"ישראל צריכה לפעול להסדר מדיני עם הפלסטינים, שבעתיד יכלול מדינה פלסטינית.",h:"מי שתומך רואה בהסדר דרך לביטחון ולרוב יהודי. מי שמתנגד חושש שמדינה כזו תהפוך לאיום ביטחוני."},
+ {id:"s2",cat:"sec",t:"ישראל צריכה להחיל ריבונות על חלקים מיהודה ושומרון.",h:"כלומר להחיל את החוק הישראלי על שטחים שנמצאים היום תחת ממשל צבאי."},
+ {id:"s3",cat:"law",t:"יש להקים ועדת חקירה ממלכתית לאירועי 7 באוקטובר.",h:"ועדה ממלכתית ממונה על ידי נשיא בית המשפט העליון. החלופה שהוצעה היא ועדה שהרכבה נקבע אחרת."},
+ {id:"s4",cat:"law",t:"יש לצמצם את סמכות בית המשפט העליון לבטל חוקים והחלטות ממשלה.",h:"מי שתומך רואה בזה החזרת כוח לנבחרי הציבור. מי שמתנגד רואה בבית המשפט בלם מפני פגיעה בזכויות."},
+ {id:"s5",cat:"law",t:"לנציגי הקואליציה צריכה להיות השפעה מכרעת על מינוי שופטים.",h:"היום שופטים ממונים בוועדה שבה יש איזון בין פוליטיקאים, שופטים ועורכי דין."},
+ {id:"s6",cat:"law",t:"יש להגביל בחוק את משך כהונתו של ראש ממשלה.",h:"למשל עד שמונה שנים, כפי שהוצע בעבר."},
+ {id:"s7",cat:"rel",t:"יש לאפשר נישואים אזרחיים בישראל.",h:"היום נישואים בישראל נערכים רק דרך הממסד הדתי של כל עדה."},
+ {id:"s8",cat:"rel",t:"יש להפעיל תחבורה ציבורית בשבת.",h:""},
+ {id:"s9",cat:"rel",t:"יש לחייב גיוס לצה״ל או שירות לאומי גם לתלמידי ישיבות, עם סנקציות על מי שלא משרת.",h:"הוויכוח הוא גם על הקצב ועל סוג הסנקציות, לא רק על העיקרון."},
+ {id:"s10",cat:"eco",t:"המדינה צריכה להגדיל את ההוצאה על רווחה, בריאות וחינוך ציבורי, גם במחיר מסים גבוהים יותר.",h:""},
+ {id:"s11",cat:"eco",t:"כדי להוריד את יוקר המחיה יש לפתוח את השוק ליבוא ולתחרות ולהפחית רגולציה.",h:"כולל הקלות בדרישות תקינה וכשרות ליבוא."},
+ {id:"s12",cat:"soc",t:"יש לתקן את חוק הלאום כך שיעגן שוויון אזרחי לכל אזרחי המדינה.",h:"חוק הלאום (2018) מגדיר את ישראל כמדינת הלאום של העם היהודי ואינו מזכיר שוויון."},
+ {id:"s13",cat:"soc",t:"ממשלה בישראל יכולה להישען על תמיכה של מפלגה ערבית.",h:"שאלה על הרכב קואליציה, לא על עמדה כלפי אזרחים."},
+ {id:"s14",cat:"soc",t:"יש להכיר בזוגיות ובנישואים של בני זוג מאותו מין.",h:""}
+];
+
+/* Position codes: value -2..2 then d (declared in platform or public statements) or e (estimate from record and coalition line). Missing = no clear position. */
+const PARTIES=[
+ {id:"likud",letters:"מחל",name:"הליכוד",lead:"בנימין נתניהו",top:"אלי כהן, אמיר אוחנה, יריב לוין, מירי רגב",bloc:"c",polls:22.4,
+  one:"מפלגת השלטון. מדגישה עוצמה צבאית, מתנגדת למדינה פלסטינית ומקדמת שינוי במערכת המשפט. תקווה חדשה של גדעון סער התמזגה בה.",
+  pos:"s1:-2d s2:1e s3:-2d s4:2d s5:2d s6:-2e s7:-1e s8:-1e s9:-1e s10:-1e s11:1e s12:-2d s13:-2e s14:0e"},
+ {id:"yashar",letters:"דרך",name:"ישר!",lead:"גדי איזנקוט",top:"יורם כהן, אורית פרקש־הכהן, עדי אלטשולר, מתן כהנא, חילי טרופר",bloc:"n",polls:22.5,
+  one:"מפלגה חדשה בראשות הרמטכ״ל לשעבר. גיוס לכולם, ועדת חקירה ממלכתית, הסדרת היחסים בין הרשויות בהסכמה, ושלילת מדינה פלסטינית בשלב זה.",
+  pos:"s1:-1d s2:-1d s3:2d s4:-1d s5:-1e s6:1e s7:1e s9:2d s12:1e s13:-2e s14:1e"},
+ {id:"beyachad",letters:"רק",name:"ביחד",lead:"נפתלי בנט (2: יאיר לפיד)",top:"קרן טרנר, מירב בן ארי, לירן אבישר בן חורין",bloc:"o",polls:12.0,
+  one:"איחוד של בנט 2026 ויש עתיד. ועדת חקירה ממלכתית ביום הראשון, חוק שירות לכולם, חוקה והגבלת כהונה. מתנגדת למדינה פלסטינית ומתחייבת להישען רק על מפלגות ציוניות.",
+  pos:"s1:-2d s2:1e s3:2d s4:0e s5:0e s6:2d s7:1e s8:1e s9:2d s10:-1e s11:2e s12:0e s13:-2d s14:1e"},
+ {id:"democrats",letters:"אמת",name:"הדמוקרטים",lead:"יאיר גולן",top:"נעמה לזימי, גלעד קריב, אפרת רייטן, יאיא פינק",bloc:"o",polls:9.3,
+  one:"איחוד העבודה ומרצ. הסדר מדיני והיפרדות מהפלסטינים, הגנה על מערכת המשפט, הפרדת דת ומדינה ומדיניות כלכלית סוציאל־דמוקרטית.",
+  pos:"s1:2d s2:-2d s3:2d s4:-2d s5:-2d s6:2e s7:2d s8:2d s9:2d s10:2d s11:-1e s12:2d s13:1e s14:2d"},
+ {id:"yb",letters:"ל",name:"ישראל ביתנו",lead:"אביגדור ליברמן",top:"רפי בן שטרית, טליה לנקרי, עודד פורר, יוליה מלינובסקי",bloc:"o",polls:8.0,
+  one:"ימין חילוני. קו ביטחוני נוקשה, גיוס לכולם, נישואים אזרחיים ותחבורה בשבת, וכלכלה פתוחה לתחרות וליבוא.",
+  pos:"s1:-1e s3:2d s4:-1e s5:-1e s6:2d s7:2d s8:2d s9:2d s10:-1e s11:2d s13:-1e s14:1e"},
+ {id:"shas",letters:"שס",name:"ש״ס",lead:"אריה דרעי",top:"ינון אזולאי, מיכאל מלכיאלי, יואב בן צור",bloc:"c",polls:8.0,
+  one:"מפלגה ספרדית־חרדית. שמירה על הסטטוס קוו הדתי ועל מעמד לומדי התורה, ומדיניות חברתית לשכבות מוחלשות.",
+  pos:"s1:-1e s3:-1e s4:2d s5:2d s6:-1e s7:-2d s8:-2d s9:-2d s10:1e s11:-1e s12:-1e s13:-2e s14:-2d"},
+ {id:"utj",letters:"ג",name:"יהדות התורה",lead:"יעקב אשר",top:"יצחק גולדקנופף, יצחק פינדרוס, מאיר פרוש",bloc:"c",polls:7.6,
+  one:"דגל התורה ואגודת ישראל. מעמד לומדי התורה ופטור מגיוס, חינוך חרדי עצמאי ושמירה על הסטטוס קוו הדתי.",
+  pos:"s3:-1e s4:2d s5:1e s6:-1e s7:-2d s8:-2d s9:-2d s10:1e s11:-1e s12:-1e s13:-1e s14:-2d"},
+ {id:"otzma",letters:"ב",name:"עוצמה יהודית",lead:"איתמר בן גביר",top:"טלי גוטליב, יצחק וסרלאוף, עמיחי אליהו",bloc:"c",polls:7.5,
+  one:"ימין לאומי־דתי. יד קשה בביטחון ובאכיפה, התיישבות וריבונות, תמיכה ברפורמה המשפטית והתנגדות נחרצת למדינה פלסטינית.",
+  pos:"s1:-2d s2:2d s3:-1e s4:2d s5:2d s6:-1e s7:-2d s8:-2d s12:-2d s13:-2d s14:-2d"},
+ {id:"rz",letters:"ט",name:"הציונות הדתית–זהות",lead:"בצלאל סמוטריץ׳ (2: משה פייגלין)",top:"אורית סטרוק, שמחה רוטמן",bloc:"c",polls:5.8,
+  one:"ריצה משותפת של הציונות הדתית וזהות. התיישבות וריבונות ביהודה ושומרון, זהות יהודית, רפורמה משפטית וכלכלת שוק.",
+  pos:"s1:-2d s2:2d s4:2d s5:2d s6:-1e s7:-2d s8:-2d s10:-1e s11:1e s12:-2d s13:-2d s14:-2d"},
+ {id:"joint",letters:"ודם",name:"הרשימה המשותפת",lead:"יוסף ג׳בארין",top:"אחמד טיבי, פאתן גטאס, עופר כסיף",bloc:"o",polls:7.2,
+  one:"חד״ש, תע״ל ובל״ד. סיום הכיבוש ומדינה פלסטינית לצד ישראל, שוויון אזרחי מלא ומאבק בפשיעה ובאפליה בחברה הערבית.",
+  pos:"s1:2d s2:-2d s4:-2d s5:-2d s7:1e s8:1e s10:2d s11:-1e s12:2d s13:2d s14:0e"},
+ {id:"raam",letters:"עם",name:"רע״ם",lead:"מנסור עבאס",top:"יואב סגלוביץ׳, וליד טאהא, ואליד אלהואשלה",bloc:"o",polls:5.1,
+  one:"התנועה האסלאמית הדרומית. שילוב החברה הערבית, מאבק בפשיעה ותקציבים, נכונות להשתתף בקואליציה ועמדות שמרניות בנושאי דת ומשפחה.",
+  pos:"s1:2d s2:-2d s4:-1e s5:-1e s7:-1e s10:1e s12:2d s13:2d s14:-2d"},
+ {id:"amcha",letters:"ך",name:"עמך ישראל",lead:"עופר וינטר",top:"יוסף חדאד, נטעלי שם טוב, פלר חסן־נחום",bloc:"n",polls:3.0,
+  one:"מפלגה חדשה בראשות תא״ל (מיל׳). ימין ביטחוני: שלילת מדינה פלסטינית, ריבונות בשטחי C ו־B, שילוב חרדים בצה״ל ושינוי במערכת המשפט. הודיעה שתמליץ על נתניהו.",
+  pos:"s1:-2d s2:2d s4:1d s5:1e s9:1d s13:-2d"},
+ {id:"reservists",letters:"די",name:"המילואימניקים והכלכלית החדשה",lead:"יועז הנדל",top:"ירון זליכה, עינת וילף",bloc:"n",polls:1.8,
+  one:"רשימה משותפת של המילואימניקים והמפלגה הכלכלית החדשה. דגש על שוויון בנטל, על שבירת ריכוזיות ועל יוקר המחיה.",
+  pos:"s1:-1e s2:1e s3:1e s4:0e s5:0e s9:2d s11:2e s13:-1e"}
+];
+/* Per-topic overview in plain language. Written from public statements, platforms and voting record up to early October 2026. Where a list has not published a detailed position, the text says so. */
+const CAT_Q={sec:"מה היא אומרת על ביטחון ועל הסכסוך עם הפלסטינים?",law:"מה היא אומרת על מערכת המשפט?",rel:"מה היא אומרת על דת, שבת וגיוס חרדים?",eco:"מה היא אומרת על כלכלה ויוקר המחיה?",soc:"מה היא אומרת על שוויון וזכויות?"};
+const TOPICS={
+ likud:{
+  sec:"הליכוד מתנגד להקמת מדינה פלסטינית ורוצה שצה״ל ימשיך להיות אחראי על הביטחון בכל השטח עד הירדן. הגישה שלו היא לנצח את חמאס, חיזבאללה ואיראן בכוח צבאי, ולחזק את הקשר עם ארצות הברית ועם מדינות ערב שחתמו על הסכמי שלום.",
+  law:"הליכוד הוביל את מה שנקרא \"הרפורמה המשפטית\". הרעיון הוא לתת לממשלה ולכנסת יותר כוח, למשל בבחירת השופטים, ולהגביל את היכולת של בית המשפט העליון לבטל החלטות. הוא מתנגד לוועדת חקירה ממלכתית על 7 באוקטובר ומציע ועדה שתמונה בדרך אחרת.",
+  rel:"רוצה להשאיר את המצב הקיים בענייני דת: שבת, נישואים וכשרות. בממשלה היוצאת קידם חוק גיוס שממשיך לפטור את רוב תלמידי הישיבות, אם כי גם בתוך הליכוד יש מי שדורש לגייס יותר.",
+  eco:"בעד שוק חופשי, הורדת מסים והקלות ביבוא. הממשלה שהוא עמד בראשה העבירה גם כספים מיוחדים למוסדות חרדיים ולהתנחלויות, ועל זה נמתחה ביקורת.",
+  soc:"תמך ב\"חוק הלאום\", שמגדיר את ישראל כמדינה של העם היהודי. בנושא הקהילה הגאה יש בתוכו דעות שונות."},
+ yashar:{
+  sec:"המטרה שאיזנקוט מציג היא מדינה יהודית ודמוקרטית עם רוב יהודי ברור. לדבריו מדינה פלסטינית לא עומדת על הפרק עכשיו, אבל גם אין כוונה לספח את יהודה ושומרון או לפנות יישובים. הוא רוצה צבא גדול יותר ויותר כוחות מילואים.",
+  law:"מתנגד לרפורמה של הממשלה היוצאת. לדעתו בית משפט עצמאי מגן על המדינה, וגם על חיילי צה״ל מול בתי דין בעולם. מציע לקבוע בחוק את הכללים בין הכנסת לבית המשפט, אבל רק בהסכמה רחבה. דורש ועדת חקירה ממלכתית על 7 באוקטובר.",
+  rel:"דורש שכולם ישרתו בצבא או בשירות לאומי, ומציב את זה כתנאי לכל ממשלה שיצטרף אליה. לפי התוכנית שפרסם, רק מספר קטן של לומדי תורה מצטיינים, כ־3% מכל שנתון, יקבלו פטור. רוצה שבכל בתי הספר ילמדו מקצועות יסוד כמו מתמטיקה ואנגלית.",
+  eco:"עוד לא פרסם תוכנית כלכלית מפורטת. מדבר על הבאת מיליון עולים בעשור ועל עצירת העזיבה של צעירים מוכשרים מהארץ.",
+  soc:"מדבר הרבה על \"ממלכתיות\", כלומר ממשלה שמחברת בין הציבורים השונים. רוצה ממשלה שלא תהיה תלויה במפלגות הערביות. יש ברשימה מועמדים דרוזים."},
+ beyachad:{
+  sec:"מתנגדת למדינה פלסטינית ולמסירת שטחים, ותומכת בהתיישבות שנעשית לפי החוק. בנט הציע בעבר לספח את שטחי C, שהם כ־60% מיהודה ושומרון. דורשת לפרק את חמאס לגמרי.",
+  law:"מבטיחה ועדת חקירה ממלכתית כבר ביום הראשון, לכתוב חוקה לישראל ולהגביל את כהונת ראש הממשלה לשמונה שנים. גם בנט וגם לפיד אמרו שצריך שינויים במערכת המשפט, אבל בהסכמה ולא בדרך של הממשלה היוצאת.",
+  rel:"מבטיחה \"חוק שירות לכולם\", בלי פטור גורף לחרדים. בשאר נושאי הדת יש הבדלים בין השניים: יש עתיד תמכה בתחבורה ציבורית בשבת ובנישואים אזרחיים, ובנט מעדיף פתרונות בהסכמה.",
+  eco:"בעד שוק פתוח, תחרות וצמיחה, ובעד כניסה של יותר חרדים וערבים לשוק העבודה. לפיד כיהן בעבר כשר האוצר.",
+  soc:"הודיעה שתסתמך רק על מפלגות ציוניות, כלומר לא על המפלגות הערביות. במצע יש פרק על קידום נשים."},
+ democrats:{
+  sec:"מאמינה שבטווח הארוך צריך הסכם עם הפלסטינים וחלוקה לשתי מדינות, כחלק מהסכם רחב עם מדינות ערב ותוך שמירה על הביטחון. מתנגדת לסיפוח ולהרחבת ההתנחלויות.",
+  law:"מתנגדת בתוקף לרפורמה המשפטית. רואה בבית המשפט וביועצים המשפטיים שומרים על הדמוקרטיה. דורשת ועדת חקירה ממלכתית.",
+  rel:"רוצה להפריד בין דת למדינה: לאפשר חתונה אזרחית בישראל, תחבורה ציבורית בשבת וגיוס לכולם. ברשימה גם רב מהזרם הרפורמי.",
+  eco:"רוצה שהמדינה תשקיע יותר ברווחה, בבריאות, בחינוך ובדיור ציבורי, ותממן את זה בין השאר במסים גבוהים יותר על בעלי הון.",
+  soc:"בעד שוויון מלא לכל האזרחים, תיקון חוק הלאום, זכויות לקהילה הגאה ושוויון לנשים. יש ברשימה מועמדים ערבים, והיא פתוחה יותר משאר האופוזיציה לעבודה משותפת עם מפלגות ערביות."},
+ yb:{
+  sec:"קו נוקשה בביטחון וקריאה להכריע את חמאס וחיזבאללה. ליברמן הציע בעבר הסכם שכולל החלפת שטחים, אבל היום אינו מקדם מדינה פלסטינית.",
+  law:"תמך בעבר בשינויים מסוימים במערכת המשפט, אבל התנגד לרפורמה של הממשלה היוצאת. בעד ועדת חקירה ממלכתית.",
+  rel:"זה הנושא שהכי מזוהה איתה: היא מפלגה חילונית. בעד חתונה אזרחית, תחבורה ציבורית בשבת, גיור קל יותר וגיוס של כל החרדים, עם קנסות כלכליים למי שלא מתגייס.",
+  eco:"כשליברמן היה שר האוצר (2021–2022) הוא הקל על יבוא מוצרים וקיצץ בתמיכות למגזר החרדי. בעד שוק פתוח ותחרות.",
+  soc:"ליברמן אומר שירצה ממשלה בלי המפלגות החרדיות ובלי המפלגות הערביות. רבים מבוחריה הם עולים מברית המועצות לשעבר."},
+ shas:{
+  sec:"חלק מגוש הימין ותומכת בממשלת נתניהו. בעבר היו בה קולות פתוחים יותר להסכמי שלום, אבל ביטחון ומדיניות הם לא במרכז מה שהיא מציעה.",
+  law:"רוצה להגביל את בית המשפט העליון, בין השאר כדי שלא יוכל לחייב גיוס של תלמידי ישיבות. רוצה לתת יותר סמכויות לבתי הדין הרבניים.",
+  rel:"הדבר החשוב לה ביותר הוא שמי שלומד תורה יוכל להמשיך ללמוד בלי להתגייס, ושיישמר המצב הקיים בשבת, בכשרות ובנישואים. ביולי 2025 יצאה מהממשלה בגלל חוק הגיוס, אבל המשיכה לתמוך בקואליציה.",
+  eco:"מתמקדת בעזרה למשפחות במצוקה: הנחות בדיור ובארנונה, קצבאות ושמירה על מחירים נמוכים של מוצרי יסוד.",
+  soc:"מתנגדת לחתונה אזרחית ולהכרה בזוגות מאותו מין. מייצגת בעיקר ציבור מסורתי וחרדי ממוצא מזרחי."},
+ utj:{
+  sec:"ביטחון ומדיניות הם לא הנושאים שלה. בדרך כלל היא תומכת בגוש הימין.",
+  law:"רוצה לאפשר לכנסת לעקוף פסיקות של בית המשפט העליון, בעיקר כדי לעגן בחוק את הפטור של תלמידי ישיבות מגיוס.",
+  rel:"הנושא המרכזי שלה הוא חוק שמבטיח שלומדי תורה לא יגויסו, ותקציבים לישיבות ולבתי הספר החרדיים בלי חובה ללמד מתמטיקה ואנגלית. ביולי 2025 יצאה מהממשלה בגלל חוק הגיוס.",
+  eco:"דואגת למשפחות גדולות: סבסוד מעונות יום, הנחות בדיור ותמיכות.",
+  soc:"שמרנית בנושאי דת ומשפחה ומתנגדת להכרה בזוגות מאותו מין. היא איחוד של שתי מפלגות: דגל התורה (חרדים ליטאים) ואגודת ישראל (חסידים)."},
+ otzma:{
+  sec:"רוצה להכריע את האויבים בכוח, לעודד את תושבי עזה לעזוב ולחדש את ההתיישבות היהודית ברצועה, ולספח את יהודה ושומרון. מתנגדת בכל תוקף למדינה פלסטינית. תומכת בעונש מוות למחבלים.",
+  law:"תומכת לגמרי ברפורמה המשפטית ובהחלשת היועצת המשפטית לממשלה, כדי שלממשלה הנבחרת יהיה יותר כוח לפעול.",
+  rel:"רוצה לחזק את האופי היהודי במרחב הציבורי, ותומכת בכך שיהודים יוכלו להתפלל בהר הבית. גיוס החרדים לא נמצא במרכז מה שהיא מדברת עליו.",
+  eco:"כלכלה לא נמצאת במרכז. דורשת יותר כסף למשטרה, לפריפריה ולהתנחלויות.",
+  soc:"פוסלת עבודה משותפת עם מפלגות ערביות ותומכת בחוק הלאום. מחזיקה בעמדות שמרניות בנושא הקהילה הגאה."},
+ rz:{
+  sec:"מאמינה בזכות העם היהודי על כל ארץ ישראל: לספח את יהודה ושומרון ולהרחיב את ההתנחלויות. מתנגדת בכל תוקף למדינה פלסטינית. סמוטריץ׳ היה שר האוצר והיה אחראי מטעם הממשלה גם על ההתיישבות.",
+  law:"שמחה רוטמן, מספר 4 ברשימה, היה מהמובילים של הרפורמה המשפטית. המפלגה רוצה שהכנסת תוכל לעקוף פסיקות של בית המשפט, ושלפוליטיקאים יהיה רוב בבחירת השופטים.",
+  rel:"רוצה לחזק את הזהות היהודית במדינה ואת מעמד הרבנות. בשאלת גיוס החרדים היא במצב מורכב: הבוחרים שלה משרתים בצבא, אבל היא שותפה בממשלה עם המפלגות החרדיות.",
+  eco:"בעד שוק חופשי. משה פייגלין, מספר 2, רוצה ממשלה קטנה ככל האפשר שמתערבת מעט בחיי האזרחים.",
+  soc:"תומכת בחוק הלאום. שמרנית בנושאי משפחה ובנושא הקהילה הגאה."},
+ joint:{
+  sec:"רוצה לסיים את השליטה הישראלית בשטחים ולהקים מדינה פלסטינית לצד ישראל, בגבולות שלפני 1967 ועם בירה במזרח ירושלים.",
+  law:"מתנגדת לרפורמה המשפטית ולחוק הלאום, ורואה בבית המשפט העליון הגנה על זכויות המיעוט. ועדת הבחירות פסלה את הרשימה, ובית המשפט העליון החזיר אותה למרוץ ב־2 באוקטובר.",
+  rel:"חד״ש, אחת משלוש המפלגות ברשימה, חילונית ותומכת בהפרדת דת ממדינה. שתי המפלגות האחרות, בל״ד ותע״ל, מתמקדות יותר בזהות הלאומית הפלסטינית.",
+  eco:"שמאל כלכלי: זכויות עובדים, דיור, והעברת תקציבים כדי לצמצם את הפערים בין יישובים ערביים ליהודיים.",
+  soc:"הנושא המרכזי שלה הוא שוויון מלא לאזרחים הערבים, ביטול חוק הלאום ומאבק בפשיעה ובאלימות שפוגעות בחברה הערבית. חד״ש מגדירה את עצמה מפלגה של ערבים ויהודים יחד."},
+ raam:{
+  sec:"בעד שתי מדינות, אבל זה לא בראש סדר העדיפויות שלה. היא מתמקדת בחיי היומיום של האזרחים הערבים.",
+  law:"התנגדה לרפורמה המשפטית, אבל מוכנה לעבוד עם כל ממשלה שתיתן מענה לחברה הערבית. גם אותה פסלה ועדת הבחירות, ובית המשפט העליון החזיר אותה למרוץ.",
+  rel:"מפלגה מוסלמית דתית ושמרנית. לא תומכת בהפרדת דת ממדינה בגרסה הליברלית.",
+  eco:"רוצה תקציבים לחברה הערבית: תוכניות פיתוח, תשתיות, הסדרה של הכפרים הבדואים בנגב שהמדינה לא מכירה בהם, ומקומות עבודה.",
+  soc:"שוויון אזרחי ומאבק בפשיעה בחברה הערבית. ב־2021 הייתה המפלגה הערבית הראשונה שישבה בממשלה, ממשלת בנט–לפיד. מתנגדת להכרה בזוגות מאותו מין. ברשימה גם יואב סגלוביץ׳, לשעבר קצין בכיר במשטרה וסגן שר."},
+ amcha:{
+  sec:"שוללת לגמרי מדינה פלסטינית. וינטר אמר שהפתרון בעזה הוא הגירה של התושבים. רוצה לספח את רוב יהודה ושומרון (שטחי C ו־B), כשהערים הפלסטיניות הגדולות ינהלו את עצמן.",
+  law:"מבטיחה \"שינוי משמעותי\" במערכת המשפט, אבל עוד לא פרסמה מה בדיוק.",
+  rel:"מדברת על שילוב חרדים בצה״ל, אבל עוד לא פרסמה תוכנית מפורטת.",
+  eco:"עוד לא פרסמה תוכנית כלכלית. מדגישה את המאבק בפשיעה.",
+  soc:"פוסלת עבודה משותפת עם מפלגות ערביות, והודיעה שתמליץ על נתניהו לראשות הממשלה. מספר 2 ברשימה הוא יוסף חדאד, ערבי־נוצרי מנצרת שמסביר את עמדות ישראל בעולם."},
+ reservists:{
+  sec:"ימין־מרכז ביטחוני. יועז הנדל תמך בעבר בסיפוח גושי ההתנחלויות הגדולים ובקעת הירדן.",
+  law:"בעד תיקונים במערכת המשפט, אבל רק בהסכמה רחבה. הנדל היה שר התקשורת בממשלת בנט–לפיד.",
+  rel:"הנושא המרכזי שלה הוא שוויון בנטל, כלומר שכולם ישרתו. היא צמחה מתוך מחאת המילואימניקים.",
+  eco:"ירון זליכה, מספר 2, היה החשב הכללי במשרד האוצר. הוא נאבק בחברות הגדולות ששולטות בשוק ובשחיתות, ורואה בזה את הדרך להוריד מחירים.",
+  soc:"עוד לא פרסמה עמדות מפורטות בנושאים האלה."}
+};
+const ONE={
+ likud:"המפלגה של ראש הממשלה נתניהו, הגדולה בימין. שמה דגש על ביטחון בכוח, מתנגדת למדינה פלסטינית ורוצה לשנות את מערכת המשפט.",
+ yashar:"מפלגה חדשה של הרמטכ״ל לשעבר גדי איזנקוט. מציגה את עצמה כממלכתית: גיוס לכולם, ועדת חקירה ממלכתית ושמירה על בית המשפט.",
+ beyachad:"שני ראשי ממשלה לשעבר, בנט ולפיד, רצים יחד. מבטיחים גיוס לכולם, ועדת חקירה וחוקה, ומתנגדים למדינה פלסטינית.",
+ democrats:"האיחוד של מפלגת העבודה ומרצ. בעד הסכם עם הפלסטינים, שמירה על בית המשפט, הפרדת דת ממדינה ומדינת רווחה.",
+ yb:"מפלגת ימין חילונית של אביגדור ליברמן. קשוחה בביטחון, ובעד גיוס חרדים, חתונה אזרחית ותחבורה בשבת.",
+ shas:"מפלגה חרדית־מסורתית של יוצאי ארצות המזרח, בראשות אריה דרעי. שומרת על לימוד התורה ועל הדת במרחב הציבורי ודואגת לשכבות החלשות.",
+ utj:"המפלגה החרדית האשכנזית. העיקר אצלה הוא פטור מגיוס ללומדי תורה וחינוך חרדי עצמאי.",
+ otzma:"מפלגת ימין דתי־לאומי של איתמר בן גביר. בעד יד קשה בביטחון ובאכיפת החוק, בעד סיפוח והתיישבות, ונגד מדינה פלסטינית.",
+ rz:"מפלגה של הציונות הדתית, מזוהה עם ההתיישבות ביהודה ושומרון, בראשות בצלאל סמוטריץ׳ יחד עם משה פייגלין. בעד סיפוח, רפורמה משפטית וזהות יהודית.",
+ joint:"שלוש מפלגות ערביות, חד״ש, תע״ל ובל״ד, ברשימה אחת בראשות יוסף ג׳בארין. בעד מדינה פלסטינית לצד ישראל ושוויון מלא לאזרחים הערבים.",
+ raam:"המפלגה הערבית־מוסלמית של מנסור עבאס. מתמקדת בצרכים היומיומיים של החברה הערבית ומוכנה לשבת בכל ממשלה.",
+ amcha:"מפלגה חדשה של עופר וינטר, קצין בכיר במילואים. ימין ביטחוני שמתנגד למדינה פלסטינית ותומך בסיפוח. תמליץ על נתניהו.",
+ reservists:"רשימה קטנה שמעמידה במרכז את המילואימניקים ואת השוויון בנטל, יחד עם כלכלן שנאבק ביוקר המחיה."
+};
+const BLOC={c:"הייתה בממשלה היוצאת",o:"הייתה באופוזיציה",n:"מפלגה חדשה"};
+for(const p of PARTIES)p.one=ONE[p.id];
+for(const p of PARTIES){p.p={};for(const tok of p.pos.split(" ")){const m=tok.match(/^(s\d+):(-?\d)([de])$/);if(m)p.p[m[1]]={v:+m[2],d:m[3]==="d"};}}
+
+const SCALE=[{v:-2,l:"מתנגד/ת מאוד"},{v:-1,l:"מתנגד/ת"},{v:0,l:"באמצע"},{v:1,l:"מסכים/ה"},{v:2,l:"מסכים/ה מאוד"}];
+const LEAD=[["exp","ניסיון שלטוני ממושך","מי שכבר ניהל מדינה ומכיר את המערכת"],["sec","רקע ביטחוני","מי שהגיע מהצבא או ממערכת הביטחון"],["new","פנים חדשות","רענון, מי שלא היה חלק מהממשלות האחרונות"],["bridge","בונה הסכמות","מי שיודע לגשר בין מחנות"]];
+
+const state={step:0,maxStep:0,q:0,ans:{},prio:[],lead:null};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const posLabel=v=>v==null?"אין עמדה ברורה":SCALE.find(s=>s.v===v).l.replace("/ת","ת").replace("/ה","ה");
+
+/* ---------- scoring (pure) ---------- */
+function score(party,ans,prio){
+  let sum=0,w=0,known=0,used=0;const rows=[];
+  for(const s of STATEMENTS){
+    const u=ans[s.id];if(u===undefined||u===null)continue;
+    const wt=prio.includes(s.cat)?2:1;const pp=party.p[s.id];
+    let agree;
+    if(pp){agree=1-Math.abs(u-pp.v)/4;known++;}else agree=0.5;
+    used++;sum+=agree*wt;w+=wt;rows.push({s,u,pp,agree});
+  }
+  return {pct:w?Math.round(sum/w*100):0,known,used,rows};
+}
+
+/* ---------- navigation ---------- */
+const STEP_NAMES=["המפלגות","השאלון","סדרי עדיפויות","תוצאות","שאלות"];
+function renderSteps(){
+  $("#steps").innerHTML=STEP_NAMES.map((n,i)=>`<button type="button" data-go="${i}" class="${i<state.step?"done":""}" ${i===state.step?'aria-current="step"':""} ${i>state.maxStep?"disabled":""}><span class="bar"></span><span class="lbl">${n}</span></button>`).join("");
+}
+function go(i){
+  i=+i;if(i===3&&answeredCount()<5){i=1;state.q=STATEMENTS.findIndex(s=>!(s.id in state.ans));if(state.q<0)state.q=0;}
+  state.step=i;state.maxStep=Math.max(state.maxStep,i);
+  document.querySelectorAll("section[data-step]").forEach(s=>s.hidden=+s.dataset.step!==i);
+  if(i===1)renderQ();if(i===3)renderResults();if(i===4)renderChatIntro();
+  renderSteps();window.scrollTo({top:0});
+}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b&&!b.disabled)go(b.dataset.go);});
+const answeredCount=()=>Object.values(state.ans).filter(v=>v!==null).length;
+
+/* ---------- step 1 ---------- */
+const ORDER=PARTIES.slice();for(let i=ORDER.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ORDER[i],ORDER[j]]=[ORDER[j],ORDER[i]];}
+let cur=0;const seen=new Set();
+function renderReader(scroll){
+  const p=ORDER[cur],t=TOPICS[p.id];seen.add(p.id);
+  $("#partyIndex").innerHTML=ORDER.map((x,i)=>`<button type="button" data-pi="${i}" aria-current="${i===cur}"><span class="nm">${esc(x.name)}</span><span class="ld">${esc(x.lead)}</span>${seen.has(x.id)&&i!==cur?'<span class="st">✓ נקרא</span>':""}</button>`).join("");
+  $("#readCount").textContent=`קראת ${seen.size} מתוך ${ORDER.length}`;
+  $("#reader").innerHTML=`
+    <div class="reader-head">
+      <div class="letters" aria-label="אותיות הפתק">${esc(p.letters)}</div>
+      <div><span class="count">רשימה ${cur+1} מתוך ${ORDER.length}</span><h2>${esc(p.name)}</h2><div class="muted">בראשות ${esc(p.lead)}</div></div>
+    </div>
+    <div class="chips"><span class="chip ${p.bloc==="c"?"bloc-c":""}">${BLOC[p.bloc]}</span><span class="chip">בסקרים: כ־${Math.round(p.polls)} מושבים${p.polls<4?", סביב הסף לכניסה לכנסת":""}</span></div>
+    <p class="one">${esc(p.one)}</p>
+    ${Object.keys(CATS).map(k=>`<div class="topicblock"><h3>${CAT_Q[k]}</h3><p>${esc(t[k])}</p></div>`).join("")}
+    <p class="small muted">ברשימה גם: ${esc(p.top)}</p>
+    <details class="stmts"><summary>איך סימנו את העמדה שלה בכל אחת מ־14 השאלות</summary><ul>${STATEMENTS.map(s=>{const pp=p.p[s.id];return `<li>${esc(s.t)} <b>${posLabel(pp?.v)}</b>${pp&&!pp.d?' <span class="est">(הערכה)</span>':""}</li>`}).join("")}</ul></details>`;
+  const prev=cur>0?ORDER[cur-1]:null,next=cur<ORDER.length-1?ORDER[cur+1]:null;
+  $("#readerNav").innerHTML=`<button class="btn ghost" type="button" data-rd="-1" ${prev?"":"disabled"}>${prev?"חזרה ל"+esc(prev.name):"חזרה"}</button>`+
+    (next?`<button class="btn" type="button" data-rd="1">למפלגה הבאה: ${esc(next.name)}</button>`:`<button class="btn" type="button" data-go="1">סיימתי לקרוא, לשאלון</button>`);
+  if(scroll)$("#reader").scrollIntoView({block:"start",behavior:"smooth"});
+}
+$("#partyIndex").addEventListener("click",e=>{const b=e.target.closest("[data-pi]");if(b){cur=+b.dataset.pi;renderReader(true);}});
+$("#readerNav").addEventListener("click",e=>{const b=e.target.closest("[data-rd]");if(b){cur+= +b.dataset.rd;renderReader(true);}});
+
+/* ---------- step 2 ---------- */
+function renderQ(){
+  const s=STATEMENTS[state.q];const a=state.ans[s.id];
+  $("#qcat").textContent=CATS[s.cat];$("#qcount").textContent=`${state.q+1} מתוך ${STATEMENTS.length}`;
+  $("#qtext").textContent=s.t;$("#qhelp").textContent=s.h;$("#qhelp").hidden=!s.h;
+  $("#scale").innerHTML=SCALE.map(o=>`<button type="button" data-v="${o.v}" aria-pressed="${a===o.v}"><span class="n">${o.v+3}</span>${o.l}</button>`).join("");
+  $("#skip").setAttribute("aria-pressed",a===null);
+  $("#qprev").disabled=state.q===0;
+  $("#qnext").textContent=state.q===STATEMENTS.length-1?"לסדרי העדיפויות":"הבא";
+  $("#dots").innerHTML=STATEMENTS.map((x,i)=>`<span class="${state.ans[x.id]!=null?"a":""} ${i===state.q?"cur":""}"></span>`).join("");
+}
+function answer(v){
+  state.ans[STATEMENTS[state.q].id]=v;
+  renderQ();setTimeout(()=>{if(state.step===1)next();},220);
+}
+function next(){if(state.q<STATEMENTS.length-1){state.q++;renderQ();}else go(2);}
+$("#scale").addEventListener("click",e=>{const b=e.target.closest("button[data-v]");if(b)answer(+b.dataset.v);});
+$("#skip").addEventListener("click",()=>answer(null));
+$("#qprev").addEventListener("click",()=>{if(state.q>0){state.q--;renderQ();}});
+$("#qnext").addEventListener("click",next);
+
+/* ---------- step 3 ---------- */
+$("#prio").innerHTML=Object.entries(CATS).map(([k,v])=>`<label class="opt"><input type="checkbox" id="prio-${k}" value="${k}"><div><b>${v}</b><span>${CAT_HELP[k]}</span></div></label>`).join("");
+$("#lead").innerHTML=LEAD.map(([k,t,d])=>`<label class="opt"><input type="radio" name="lead" id="lead-${k}" value="${k}"><div><b>${t}</b><span>${d}</span></div></label>`).join("");
+$("#prio").addEventListener("change",e=>{
+  const boxes=[...document.querySelectorAll("#prio input")];let checked=boxes.filter(b=>b.checked);
+  if(checked.length>2){e.target.checked=false;checked=boxes.filter(b=>b.checked);}
+  state.prio=checked.map(b=>b.value);
+});
+$("#lead").addEventListener("change",e=>{state.lead=e.target.value;});
+
+/* ---------- step 4 ---------- */
+let lastResults=[];
+function renderResults(){
+  lastResults=PARTIES.map(p=>({p,...score(p,state.ans,state.prio)})).sort((a,b)=>b.pct-a.pct||b.known-a.known);
+  const n=answeredCount();
+  $("#resnote").textContent=`לפי ${n} השאלות שענית עליהן${state.prio.length?`. שאלות על ${state.prio.map(k=>CATS[k]).join(" ועל ")} נחשבו כפול`:""}. כשלמפלגה אין עמדה ברורה בשאלה, היא מקבלת עליה חצי ניקוד.`;
+  $("#results").innerHTML=lastResults.map((r,i)=>`<article class="res ${i===0?"top":""}">
+    <div class="res-head"><span class="letters">${esc(r.p.letters)}</span><div><b>${esc(r.p.name)}</b><div class="small muted">${esc(r.p.lead)} · עמדה ידועה ב־${r.known} מתוך ${r.used} שאלות${r.p.polls<4?" · בסקרים סביב אחוז החסימה":""}</div></div><span class="pct">${r.pct}%</span></div>
+    <div class="meter" aria-hidden="true"><i style="width:${r.pct}%"></i></div>
+    <details><summary>במה אתם מסכימים ובמה לא</summary><div class="cmp"><table><thead><tr><th>הנושא</th><th>את/ה</th><th>המפלגה</th><th></th></tr></thead><tbody>
+    ${r.rows.map(x=>{const cls=!x.pp?"mid":x.agree>=.75?"ok":x.agree<=.25?"no":"mid";const tag=!x.pp?"לא ידוע":x.agree>=.75?"קרוב":x.agree<=.25?"רחוק":"חלקי";
+      return `<tr><td>${esc(x.s.t)}</td><td class="v">${posLabel(x.u)}</td><td class="v">${posLabel(x.pp?.v)}${x.pp&&!x.pp.d?' <span class="est">(הערכה)</span>':""}</td><td><span class="pill ${cls}">${tag}</span></td></tr>`}).join("")}
+    </tbody></table></div></details>
+  </article>`).join("");
+  $("#explainOut").innerHTML="";
+}
+
+/* ---------- Claude (sample capability) ---------- */
+let sample=null;
+const ERR={not_granted:"השימוש ב־Claude לא אושר בדף הזה.",sampling_disabled:"Claude לא זמין בחשבון הזה.",rate_limited:"יותר מדי בקשות כרגע. נסו שוב בעוד כמה דקות.",session_expired:"צריך להתחבר מחדש ל־Claude.",refused:"Claude לא ענה על הבקשה הזו. נסו לנסח אחרת.",empty_completion:"לא התקבלה תשובה. נסו לנסח אחרת.",upstream_error:"התקשורת נקטעה. אפשר לנסות שוב."};
+const errText=c=>ERR[c]||ERR.upstream_error;
+const HIDE=["not_granted","sampling_disabled","not_declared","capability_disabled","capability_removed"];
+function hideAI(){$("#explain").hidden=true;$("#toChat").hidden=true;$("#noai").hidden=false;STEP_NAMES.length=4;renderSteps();}
+
+function md(t){
+  const lines=esc(t).split("\n");let out="",list=false;
+  const inl=s=>s.replace(/\*\*(.+?)\*\*/g,"<b>$1</b>");
+  for(let l of lines){
+    if(/^\s*[-*•]\s+/.test(l)){if(!list){out+="<ul>";list=true;}out+="<li>"+inl(l.replace(/^\s*[-*•]\s+/,""))+"</li>";continue;}
+    if(list){out+="</ul>";list=false;}
+    if(/^#{1,4}\s/.test(l))out+="<h3>"+inl(l.replace(/^#+\s/,""))+"</h3>";
+    else if(/^\d+\.\s/.test(l)&&l.length<80)out+="<h3>"+inl(l)+"</h3>";
+    else if(l.trim())out+="<p>"+inl(l)+"</p>";
+  }
+  if(list)out+="</ul>";return out;
+}
+
+function profileText(){
+  const a=STATEMENTS.map(s=>`- ${s.t} → ${state.ans[s.id]==null?"אין עמדה":posLabel(state.ans[s.id])}`).join("\n");
+  const pr=state.prio.length?state.prio.map(k=>CATS[k]).join(", "):"לא נבחרו";
+  const ld=state.lead?LEAD.find(x=>x[0]===state.lead)[1]:"לא נבחר";
+  return `תשובות המשתמש:\n${a}\n\nתחומים חשובים במיוחד: ${pr}\nהעדפה במנהיגות: ${ld}`;
+}
+function partiesText(){
+  return PARTIES.map(p=>`${p.name} (פתק: ${p.letters}; בראשות ${p.lead}; ${BLOC[p.bloc]}; ממוצע סקרים כ־${p.polls} מנדטים)\nתיאור: ${p.one}\n${Object.entries(CATS).map(([k,v])=>v+": "+TOPICS[p.id][k]).join("\n")}\nעמדות: ${STATEMENTS.map(s=>{const pp=p.p[s.id];return `${s.id}=${pp?pp.v+(pp.d?"":"(הערכה)"):"לא ידוע"}`}).join(", ")}`).join("\n\n");
+}
+const RULES=`את/ה מסביר/ה פוליטי ניטרלי ומלמד עבור כלי השוואה לבחירות לכנסת ה־26 (27.10.2026). כתוב/כתבי בעברית פשוטה ובהירה.
+עקרונות:
+1. ניטרליות מלאה. לא לשכנע, לא להעדיף מחנה, לא לכתוב "כדאי לך להצביע ל". להציג כל עמדה בדרך שתומכיה היו מתארים אותה.
+2. להישען על הנתונים שבהודעה. עמדות שמסומנות "הערכה" הן קידוד משוער, וצריך לומר זאת כשמסתמכים עליהן. אם אין מידע, לומר שאין מידע ולהפנות לאתר המפלגה או למכון הישראלי לדמוקרטיה.
+3. הידע שלך על אירועים אחרי אמצע 2026 מוגבל. לא להמציא עובדות, ציטוטים או מספרים.
+4. ההתאמה מחושבת בכלי בנוסחה קבועה (מרחק בין התשובה לעמדת המפלגה בכל היגד, משקל כפול לתחומים שנבחרו). אל תחשב/י אותה מחדש.
+סולם העמדות: 2 מסכים מאוד, 1 מסכים, 0 באמצע, 1- מתנגד, 2- מתנגד מאוד.
+ההיגדים: ${STATEMENTS.map(s=>s.id+": "+s.t).join(" | ")}
+
+נתוני המפלגות:
+${partiesText()}`;
+
+let explainCtl=null;
+$("#explainBtn").addEventListener("click",async()=>{
+  if(!sample)return;
+  const out=$("#explainOut");out.innerHTML='<p class="thinking">כותב הסבר...</p>';
+  $("#explainBtn").disabled=true;$("#explainStop").hidden=false;explainCtl=new AbortController();
+  const scores=lastResults.map(r=>`${r.p.name}: ${r.pct}% (עמדה ידועה ב־${r.known} מתוך ${r.used} שאלות)`).join("\n");
+  const prompt=`${RULES}
+
+${profileText()}
+
+תוצאות ההתאמה שחושבו בכלי:
+${scores}
+
+כתוב/כתבי הסבר אישי במבנה הזה, עם כותרות קצרות:
+## הפרופיל שלך — 2-3 משפטים שמתארים את העמדות בלי תוויות כמו "ימני" או "שמאלני".
+## מה עומד מאחורי ההתאמות הגבוהות — שתיים־שלוש המפלגות שבראש: באילו היגדים יש קרבה, ובאיזה היגד חשוב יש פער.
+## איפה תצטרך/י להתפשר — מה לא מסתדר אצל אף מפלגה, או היכן המפלגות הקרובות נבדלות זו מזו.
+## מנהיגות — איך ההעדפה במנהיגות מתיישבת עם ראשי המפלגות הקרובות, בעובדות בלבד.
+## מה כדאי לבדוק — 2-3 שאלות שכדאי לברר לפני ההחלטה. לציין אם מפלגה קרובה נמצאת בסקרים סביב אחוז החסימה.
+עד 350 מילים. בלי הקדמה ובלי סיכום שמכריע.`;
+  try{
+    await sample(prompt,{signal:explainCtl.signal,onText:({text})=>{out.innerHTML=md(text);}});
+  }catch(e){
+    if(HIDE.includes(e.code)){hideAI();return;}
+    if(e.code!=="cancelled"){out.innerHTML=(e.text?md(e.text):"")+`<p class="muted small">${errText(e.code)}</p>`;}
+  }finally{$("#explainBtn").disabled=false;$("#explainStop").hidden=true;}
+});
+$("#explainStop").addEventListener("click",()=>explainCtl?.abort());
+
+/* ---------- step 5: chat ---------- */
+const turns=[];let chatCtl=null;
+const SUGG=["מה ההבדל בין ישר! לביחד?","מה זה אחוז החסימה ולמה הוא חשוב?","מה הוויכוח על ועדת חקירה ממלכתית?","מה מבדיל בין ש״ס ליהדות התורה?"];
+function renderChatIntro(){
+  $("#suggest").innerHTML=turns.length?"":SUGG.map(s=>`<button type="button">${s}</button>`).join("");
+}
+$("#suggest").addEventListener("click",e=>{const b=e.target.closest("button");if(b){$("#chatin").value=b.textContent;$("#chatform").requestSubmit();}});
+function addMsg(role,html){const d=document.createElement("div");d.className="msg "+(role==="user"?"u":"a md");d.innerHTML=html;$("#chatlog").append(d);d.scrollIntoView({block:"nearest"});return d;}
+$("#chatform").addEventListener("submit",async e=>{
+  e.preventDefault();if(!sample)return;
+  const q=$("#chatin").value.trim();if(!q)return;
+  $("#chatin").value="";$("#suggest").innerHTML="";$("#chatnote").textContent="";
+  addMsg("user",esc(q));turns.push({role:"user",content:q});
+  const bubble=addMsg("assistant",'<p class="thinking">חושב...</p>');
+  $("#chatsend").disabled=true;chatCtl=new AbortController();
+  const ctx=`${RULES}\n\n${answeredCount()?profileText():"המשתמש עוד לא ענה על השאלון."}\n\nענה/עני על שאלות המשתמש בקצרה (עד 200 מילים), בצורה מאוזנת. אם נשאלת "למי להצביע", הסבר/י שההחלטה של המשתמש והצע/י דרך לחשוב עליה.`;
+  const history=turns.slice(-10);
+  try{
+    const {text}=await sample([{role:"user",content:ctx},...history],{cache:false,signal:chatCtl.signal,onText:({text})=>{bubble.innerHTML=md(text);}});
+    turns.push({role:"assistant",content:text});
+  }catch(err){
+    if(HIDE.includes(err.code)){bubble.remove();hideAI();go(3);return;}
+    bubble.innerHTML=err.text?md(err.text):"";if(!err.text)bubble.remove();
+    $("#chatnote").textContent=errText(err.code);
+  }finally{$("#chatsend").disabled=false;}
+});
+
+/* ---------- boot ---------- */
+renderReader(false);go(0);
+(async()=>{
+  try{sample=window.claude?await window.claude.use("sample"):null;}catch{sample=null;}
+  if(!sample)hideAI();
+})();
+</script>
+
+</body>
+</html>
