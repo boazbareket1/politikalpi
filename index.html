@@ -73,6 +73,24 @@ section[data-step]{display:grid;gap:20px}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 
+/* entry hero */
+.hero{background:var(--envelope);color:#fff;border-radius:18px;padding:36px 24px 30px;display:grid;gap:14px;justify-items:center;text-align:center}
+:root[data-theme="dark"] .hero{color:#0d1520}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hero{color:#0d1520}}
+.hero-kicker{font-size:18px;font-weight:600;opacity:.9}
+.hero-title{font-size:clamp(28px,7vw,42px);max-width:18ch}
+.hero-sub{font-family:var(--mono);font-size:14px;opacity:.85}
+.btn-xl{background:var(--paper);color:var(--envelope);border-color:var(--paper);font-size:clamp(20px,5vw,24px);padding:16px 40px;margin-top:6px;box-shadow:0 6px 18px rgba(0,0,0,.18);transition:transform .15s}
+.btn-xl:hover{transform:translateY(-2px)}
+.btn-xl:focus-visible{outline-color:var(--paper);outline-offset:4px}
+.hero-facts{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;font-size:14.5px;opacity:.9}
+.hero-facts li::before{content:"✓ ";font-weight:700}
+.browse{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;gap:12px 16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.browse-panel{display:grid;gap:20px;scroll-margin-top:180px}
+#reader{scroll-margin-top:180px}
+details.note summary{cursor:pointer;color:var(--envelope)}
+@media (max-width:480px){.hero{padding:28px 16px 24px}.btn-xl{width:100%;padding:16px 20px}.browse .btn{width:100%}}
+
 /* ballot slips */
 .slips{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
 .slip{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:14px 16px 16px;display:grid;gap:8px;align-content:start;box-shadow:0 1px 0 var(--line);text-align:start}
@@ -192,20 +210,41 @@ footer ul{margin:0;padding-inline-start:18px}
 <main>
 <!-- STEP 1 -->
 <section data-step="0">
-  <p class="lede">לא בטוחים במי לבחור? כאן אפשר להכיר כל מפלגה, לענות על 14 שאלות קצרות ולראות עם מי יש לכם הכי הרבה הסכמה, ובמה בדיוק.</p>
-  <div class="note">
-    <b>לפני שמתחילים</b>
+  <div class="hero">
+    <p class="hero-kicker">לא בטוחים במי לבחור?</p>
+    <h2 class="hero-title">גלו איזו מפלגה הכי קרובה לעמדות שלכם</h2>
+    <p class="hero-sub">14 שאלות קצרות · כ־3 דקות · בלי הרשמה</p>
+    <button class="btn btn-xl" type="button" data-go="1">להתחלת השאלון ←</button>
+    <ul class="hero-facts">
+      <li>13 הרשימות שמתמודדות לכנסת ה־26</li>
+      <li>חישוב פשוט וגלוי, לא בינה מלאכותית</li>
+      <li>התשובות לא נשמרות ולא נשלחות לשום מקום</li>
+    </ul>
+  </div>
+
+  <div class="browse">
+    <div>
+      <b>רוצים קודם להכיר את המפלגות?</b>
+      <p class="muted small">אפשר לקרוא מה כל רשימה חושבת בכל תחום, לפני השאלון או אחריו.</p>
+    </div>
+    <button class="btn ghost" type="button" id="browseToggle" aria-expanded="false" aria-controls="browsePanel">להכרת 13 הרשימות</button>
+  </div>
+
+  <div id="browsePanel" class="browse-panel" hidden>
+    <div class="index">
+      <div class="index-head"><h2>13 הרשימות</h2><span class="muted small" id="readCount"></span></div>
+      <p class="muted small">לחצו על רשימה כדי לקרוא מה היא חושבת. הסדר אקראי ומשתנה בכל כניסה, כדי לא להעדיף אף אחת.</p>
+      <div class="index-list" id="partyIndex" aria-label="בחירת רשימה"></div>
+    </div>
+    <article class="reader" id="reader" aria-live="polite"></article>
+    <div class="qnav" id="readerNav"></div>
+  </div>
+
+  <details class="note">
+    <summary><b>על המידע והחישוב</b></summary>
     <span>מה שכתוב על כל מפלגה מבוסס על מה שהיא ומנהיגיה אמרו ופרסמו עד תחילת אוקטובר 2026. כשלא היה מידע ברור, כתוב שלא פורסם או שזו הערכה.</span>
-    <span>החישוב פשוט וגלוי, ולא נעשה על ידי בינה מלאכותית. התוצאה עוזרת לחשוב, היא לא אומרת לכם למי להצביע. התשובות לא נשמרות ולא נשלחות לשום מקום.</span>
-  </div>
-  <div class="index">
-    <div class="index-head"><h2>13 הרשימות</h2><span class="muted small" id="readCount"></span></div>
-    <p class="muted small">לחצו על רשימה כדי לקרוא מה היא חושבת. הסדר אקראי ומשתנה בכל כניסה, כדי לא להעדיף אף אחת.</p>
-    <div class="index-list" id="partyIndex" aria-label="בחירת רשימה"></div>
-    <p class="small">כבר מכירים את המפלגות? <button class="linkbtn" type="button" data-go="1">אפשר לעבור ישר לשאלון</button></p>
-  </div>
-  <article class="reader" id="reader" aria-live="polite"></article>
-  <div class="qnav" id="readerNav"></div>
+    <span>החישוב פשוט וגלוי, ולא נעשה על ידי בינה מלאכותית. התוצאה עוזרת לחשוב, היא לא אומרת לכם למי להצביע.</span>
+  </details>
 </section>
 
 <!-- STEP 2 -->
@@ -466,7 +505,7 @@ function score(party,ans,prio){
 }
 
 /* ---------- navigation ---------- */
-const STEP_NAMES=["המפלגות","השאלון","סדרי עדיפויות","תוצאות","שאלות"];
+const STEP_NAMES=["פתיחה","השאלון","סדרי עדיפויות","תוצאות","שאלות"];
 function renderSteps(){
   $("#steps").innerHTML=STEP_NAMES.map((n,i)=>`<button type="button" data-go="${i}" class="${i<state.step?"done":""}" ${i===state.step?'aria-current="step"':""} ${i>=3&&answeredCount()<5?"disabled title=\"זמין אחרי 5 תשובות לפחות\"":""}><span class="bar"></span><span class="lbl">${n}</span></button>`).join("");
 }
@@ -504,6 +543,12 @@ function renderReader(scroll){
 }
 $("#partyIndex").addEventListener("click",e=>{const b=e.target.closest("[data-pi]");if(b){cur=+b.dataset.pi;renderReader(true);}});
 $("#readerNav").addEventListener("click",e=>{const b=e.target.closest("[data-rd]");if(b){cur+= +b.dataset.rd;renderReader(true);}});
+$("#browseToggle").addEventListener("click",()=>{
+  const panel=$("#browsePanel"),open=panel.hidden;
+  panel.hidden=!open;$("#browseToggle").setAttribute("aria-expanded",open);
+  $("#browseToggle").textContent=open?"סגירת רשימת המפלגות":"להכרת 13 הרשימות";
+  if(open)panel.scrollIntoView({block:"start",behavior:"smooth"});
+});
 
 /* ---------- step 2 ---------- */
 function renderQ(){
